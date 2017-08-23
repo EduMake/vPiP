@@ -125,6 +125,9 @@ class TrapezoidInterpolater:
                                       self.decelTime + self.cruiseSpeed * self.decelTime)
             self.time = self.accelTime + self.cruiseTime + self.decelTime
             self.slices = int(ceil(self.time / (config.timeSliceUS / 1000000)))
+    
+    def __str__(self):
+        return "distance={} time={} slices={}".format(self.distance, self.time, self.slices)
 
     def slices(self):
         return self.slices
@@ -144,6 +147,7 @@ class TrapezoidInterpolater:
                 time -= self.accelTime + self.cruiseTime
                 distanceAlongMovement = (self.accelDist + self.cruiseDist + 0.5 * -self.acceleration
                                          * time * time + self.cruiseSpeed * time)
+            #print("distanceAlongMovement", distanceAlongMovement)
             return self.origin + (self.direction * distanceAlongMovement)
 
     def writeData(self):

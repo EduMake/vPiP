@@ -19,10 +19,10 @@ Vpip = vPiP.Vpip
 
 with Vpip() as p:
     p.setShowDrawing(True)
-    p.setPlotting(False)
+    p.setPlotting(True)
     try:
         p.moveTo(0, 0)
-        p.drawTo(p.config.pixels, 0)
+        p.drawTo(p.config.pixels, 0, width=5, color=[255,0,0])
         p.drawTo(p.config.pixels, p.config.heightPixels)
         p.drawTo(0, p.config.heightPixels)
         p.drawTo(0, 0)
@@ -35,7 +35,7 @@ with Vpip() as p:
             y = 10
             while y + gridY < p.config.heightPixels:
                 p.moveTo(x, y)
-                p.drawTo(x + gridX, y)
+                p.drawTo(x + gridX, y, width=5, color=[255,0,0])
                 p.drawTo(x + gridX, y + gridY)
                 p.drawTo(x, y + gridY)
                 p.drawTo(x, y)

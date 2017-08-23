@@ -20,15 +20,17 @@ from vPiP.renderers.svg import renderSVG
 filename = "../testImages/Vulcan.svg"
 
 with Vpip() as p:
-#    p.setShowDrawing(True)
-#    p.setPlotting(False)
+    p.setShowDrawing(False)
+    p.setPlotting(True)
+    #if True:
     try:
-        renderSVG(filename, 300, 200, 600, p)
+        #renderSVG(filename, 300, 200, 600, p)
         renderSVG(filename, 200, 1000, 800, p)
-        renderSVG(filename, 0, 1950, 1200, p)
-        d = ConstrainDrawingRectangle(1200, 0, 5000, p.height, p)
-        renderSVG(filename, 1200, 0, 3800, d, True)
+        #renderSVG(filename, 0, 1950, 1200, p)
+        #d = ConstrainDrawingRectangle(1200, 0, 5000, p.height, p)
+        #renderSVG(filename, 1200, 0, 3800, d, True)
         p.goHome()
+    #if False:
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print("test1 main thread exception : %s" % exc_type)

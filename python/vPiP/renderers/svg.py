@@ -15,6 +15,7 @@ import sys
 import traceback
 import re
 from math import pow
+import webcolors
 from xml.dom import minidom, Node
 from ..coordinates import Coordinate
 
@@ -69,14 +70,47 @@ class SVGElement:
             if attrib.name.count(':') == 1:
                 attrib.name = attrib.name.split(':')[1]
             self.__dict__[attrib.name] = attrib.value
-
+            if(attrib.name == "style"):
+                stylefrags = attrib.value.split(';')
+                #print("stylefrags", stylefrags, len(stylefrags))
+                for k in range(0, len(stylefrags)):
+                    #print("stylefrags", k, stylefrags[k])
+                    styleparts = stylefrags[k].split(':')
+                    #print("styleparts", styleparts)
+                    self.__dict__[styleparts[0].replace("-","_")] = styleparts[1]
+                    #print (styleparts[0], styleparts[1])
+                    if(styleparts[0] == "stroke"):
+                        self.stroke_color = webcolors.hex_to_rgb(styleparts[1])
+                    #if(styleparts[0] == "fill"):
+                    #    self.fill_color = webcolors.hex_to_rgb(styleparts[1])
+                        
+                    
     def createDrawingCoords(self):
         # sub classes need to provide the implementation of this method
+        #if hasattr(self, 'style'):
+        #    print("createDrawingCoords.style", str(self.style))
+                
         if self.drawingCoords is None:
             self.drawingCoords = []
             for elem in self.childElements:
+                #if hasattr(elem, 'style'):
+                #    print("createDrawingCoords.style", str(elem.style))
+                #if hasattr(elem, 'stroke'):
+                #    print("createDrawingCoords.stroke", str(elem.stroke))
+                
                 coords = elem.createDrawingCoords()
                 if coords is not None:
+                    if hasattr(elem, 'stroke_width'):
+                        #print("elem.stroke_width", str(elem.stroke_width), int(elem.stroke_width))
+                        for coord in coords:
+                            coord.width = int(elem.stroke_width)
+                    
+                    if hasattr(elem, 'stroke_color'):
+                        #print("elem.stroke_color", str(elem.stroke_color))
+                        for coord in coords:
+                            coord.color = [elem.stroke_color[0], elem.stroke_color[1], elem.stroke_color[2]]
+                            #print("coord", str(coord))
+                            
                     self.drawingCoords += coords
         if len(self.drawingCoords) > 0:
             return self.drawingCoords
@@ -494,7 +528,7 @@ class SVG:
                 if c.penup == True:
                     drawer.moveTo(c.x + x, c.y + y)
                 else:
-                    drawer.drawTo(c.x + x, c.y + y)
+                    drawer.drawTo(c.x + x, c.y + y, c.width, c.color)
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print("drawSVG exception : %s" % exc_type)

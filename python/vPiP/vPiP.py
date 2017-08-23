@@ -14,7 +14,7 @@
 from .config import PolarConfig
 from .coordinates import Coordinate
 from .constrainDrawingRectangle import ConstrainDrawingRectangle
-from .serialHandler import SerialHandler
+from .stepperHandler import SerialHandler
 from PIL import Image, ImageDraw
 from time import time
 
@@ -24,7 +24,7 @@ class outputter:
 
     def rotateCoords(self, coord):
         if self.config.rotate:
-            return Coordinate.fromCoords(coord.y, self.config.pixels - coord.x, coord.penup)
+            return Coordinate.fromCoords(coord.y, self.config.pixels - coord.x, coord.penup, coord.width, coord.colorS)
         else:
             return coord
 
@@ -34,11 +34,14 @@ class Plotter(outputter):
         self.serial = SerialHandler(self.config)
         self.serial.connect()
         self.currPosSysCoords = Coordinate.fromCoords(self.config.homeX, self.config.homeY, True)
+        #print("init self.currPosSysCoords", str(self.currPosSysCoords))
 
     def sendCommand(self, coord):
         coordsSystem = self.config.drawing2systemCoords(self.rotateCoords(coord))
         self.serial.sendCommand(coordsSystem)
         self.currPosSysCoords = coordsSystem
+        #print("sendCommand self.currPosSysCoords", str(self.currPosSysCoords))
+
 
     def finishDrawing(self):
         self.goHome()
@@ -46,12 +49,13 @@ class Plotter(outputter):
 
     def penUp(self):
         self.currPosSysCoords = Coordinate.fromCoords(self.currPosSysCoords.x, self.currPosSysCoords.y, True)
-        self.serial.sendCommand(self.currPosSysCoords)
+        #self.serial.sendCommand(self.currPosSysCoords)
 
     def goHome(self):
         self.currPosSysCoords = Coordinate.fromCoords(self.config.homeX, self.config.homeY, True)
         self.serial.sendCommand(self.currPosSysCoords)
         self.serial.sendCommand(self.currPosSysCoords)
+        #print("goHome self.currPosSysCoords", str(self.currPosSysCoords))
 
 
 class Drawer(outputter):
@@ -145,7 +149,7 @@ class Vpip:
         else:
             self.config.showImage = False
             self.drawing = self.config.showImage or self.config.saveImage
-            if not drawing:
+            if not self.drawing:
                 self.drawer = None
                 self.drawerConstraint = None
 
@@ -159,7 +163,7 @@ class Vpip:
         else:
             self.config.saveImage = False
             self.drawing = self.config.showImage or self.config.saveImage
-            if not drawing:
+            if not self.drawing:
                 self.drawer = None
                 self.drawerConstraint = None
 
@@ -192,12 +196,12 @@ class Vpip:
         if self.config.polarDraw:
             self.plotterConstraint.moveTo(x, y)
 
-    def drawTo(self, x, y):
+    def drawTo(self, x, y, width=1, color=[255,255,255]):
         self._start()
         if self.drawing:
             self.drawerConstraint.drawTo(x, y)
         if self.config.polarDraw:
-            self.plotterConstraint.drawTo(x, y)
+            self.plotterConstraint.drawTo(x, y, width, color)
 
     def goHome(self):
         self._start()

@@ -157,11 +157,11 @@ class ConstrainDrawingRectangle:
         self.moveDrawingCoordinates = Coordinate.fromCoords(x, y, True)
         self.outstandingMove = True
 
-    def drawTo(self, x, y):
+    def drawTo(self, x, y, width=1, color=[255,255,255]):
         if self.outstandingMove:
             self.sendCommand(self.moveDrawingCoordinates)
             self.currentDrawingPosition = self.moveDrawingCoordinates
             self.outstandingMove = False
-        coords = Coordinate.fromCoords(x, y, False)
+        coords = Coordinate.fromCoords(x, y, False, width, color)
         self.sendCommand(coords)
         self.currentDrawingPosition = coords

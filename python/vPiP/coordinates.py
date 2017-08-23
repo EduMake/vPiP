@@ -16,7 +16,7 @@ from math import hypot, ceil
 
 class Coordinate:
     @classmethod
-    def fromCoords(cls, x, y, penup):
+    def fromCoords(cls, x, y, penup, width=1, color=[0,0,0]):
         """
 
         :param penup: bool
@@ -28,12 +28,16 @@ class Coordinate:
         obj.x = float(x)
         obj.y = float(y)
         obj.penup = penup
+        obj.width = width
+        obj.color = color
         return obj
 
     def __init__(self):
         self.x = 0.0
         self.y = 0.0
         self.penup = True
+        self.width=1
+        self.color=[255,255,255]
 
     def __eq__(self, coord):
         return (isinstance(coord, self.__class__) and
@@ -59,7 +63,10 @@ class Coordinate:
         return self.divide(factor)
 
     def __str__(self):
-        return "({}, {} with penup={})".format(self.x, self.y, self.penup)
+        if(self.penup):
+            return "({}, {} with penup={})".format(self.x, self.y, self.penup)
+        else:
+            return "({}, {} with width={} & color={})".format(self.x, self.y, self.width, self.color)
 
     def length(self):
         """
@@ -72,28 +79,28 @@ class Coordinate:
         :param coord:
         :rtype: Coordinate
         """
-        return Coordinate.fromCoords(self.x + coord.x, self.y + coord.y, self.penup or coord.penup)
+        return Coordinate.fromCoords(self.x + coord.x, self.y + coord.y, self.penup or coord.penup, coord.width, coord.color)
 
     def minus(self, coord):
         """
         :param coord:
         :rtype: Coordinate
         """
-        return Coordinate.fromCoords(self.x - coord.x, self.y - coord.y, self.penup or coord.penup)
+        return Coordinate.fromCoords(self.x - coord.x, self.y - coord.y, self.penup or coord.penup, self.width, self.color)
 
     def scaled(self, factor):
         """
         :param factor:
         :rtype: Coordinate
         """
-        return Coordinate.fromCoords(float(self.x) * factor, float(self.y) * factor, self.penup)
+        return Coordinate.fromCoords(float(self.x) * factor, float(self.y) * factor, self.penup, self.width, self.color)
 
     def divide(self, factor):
         """
         :param factor:
         :rtype: Coordinate
         """
-        return Coordinate.fromCoords(float(self.x) / factor, float(self.y) / factor, self.penup)
+        return Coordinate.fromCoords(float(self.x) / factor, float(self.y) / factor, self.penup, self.width, self.color)
 
     def translate(self, factorX, factorY):
         """
@@ -101,14 +108,14 @@ class Coordinate:
         :param factorY:
         :rtype: Coordinate
         """
-        return Coordinate.fromCoords(self.x + factorX,  self.y + factorY, self.penup)
+        return Coordinate.fromCoords(self.x + factorX,  self.y + factorY, self.penup, self.width, self.color)
 
     def normalised(self):
         """
         :rtype: Coordinate
         """
         length = self.length()
-        return Coordinate.fromCoords(self.x / length, self.y / length, self.penup)
+        return Coordinate.fromCoords(self.x / length, self.y / length, self.penup, self.width, self.color)
 
     def dotProduct(self, coord):
         """
